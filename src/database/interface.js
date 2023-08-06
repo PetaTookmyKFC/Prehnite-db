@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const uuid = require("uuid");
 const Database = require("./databaseClass.js");
+const {GenerateDatabaseInfo} = require("./databaseControls.js");
 
 
 class DBSystem {
@@ -65,7 +66,7 @@ class DBSystem {
    * @param {String} rootPath
    * @returns {Database} databaseObject
   */
- CreateDatabase(name, OProotPath) {
+  CreateDatabase(name, OProotPath) {
    let rootPath = !(OProotPath == undefined || OProotPath == "") ? OProotPath : this.DefaultRoot
    
    return new Promise((resolve, reject) => {
@@ -79,6 +80,25 @@ class DBSystem {
         reject("Name already exists")
       }
     });
+  }
+  /**
+   * 
+   * @param {String} name 
+   * @returns {Database} databaseObject
+   */
+  SelectDatabase(name) {
+    return new Promise((resolve, reject) => {
+      if ( this.Databases[name] == undefined ) {
+        reject("404");
+      } else {
+          let database = new Database(name, this.Databases[name].Root);
+          resolve(database);
+      }
+    })
+  }
+
+  GenDatabase (configPath) {
+    return GenerateDatabaseInfo(configPath)
   }
 }
 
