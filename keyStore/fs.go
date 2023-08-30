@@ -33,13 +33,30 @@ func (key *KeyStore) Save() error {
 }
 
 // Load file
-// func (key *KeyStore) LoadPrev() error {
-// 	// Get Directory
-// 	directory, err := os.Getwd()
-// 	if err != nil {
-// 		log.Println(err)
-// 	}
-// 	oldData := path.Join(directory, "OldMap")
+func (key *KeyStore) LoadPrev() error {
+	// Get Directory
+	directory, err := os.Getwd()
+	if err != nil {
+		log.Println(err)
+	}
+	oldData := path.Join(directory, "OldMap")
 
-// 	return nil
-// }
+	// Check if file exists
+	if _, err := os.Stat(oldData); err != nil {
+		return nil
+	}
+
+	file, err := os.Open(oldData)
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		fmt.Printf("Loaded: %s \n", scanner.Text())
+	}
+
+	if err := scanner.Err(); err != nil {
+		log.Panic(err)
+	}
+
+	return nil
+}

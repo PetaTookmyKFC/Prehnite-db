@@ -11,6 +11,7 @@ type KeyStore struct {
 type Data struct {
 	Value string
 	Prev  string
+	Next  string
 }
 
 func Start_StringStore(size int) *KeyStore {
@@ -20,6 +21,7 @@ func Start_StringStore(size int) *KeyStore {
 		FirstItem:  "",
 		LastItem:   "",
 	}
+	rKeyStore.LoadPrev()
 	return &rKeyStore
 }
 
@@ -39,7 +41,28 @@ func (keys *KeyStore) deleteLast() {
 		keys.CurrSize = keys.CurrSize - 1
 	}
 }
+func (keys *KeyStore) deleteItem(key string) bool {
+	if val, ok := keys.Storage[key]; ok {
+		var linKey *Data
+		if val.Next != "" {
+			linKey = keys.GetItem(val.Next)
+			if linKey != nil {
+				linKey.Prev = val.Prev
+			}
+		}
+		if val.Prev != "" {
+			linKey = keys.GetItem(val.Prev)
+			if linKey != nil {
+				linKey.Next = val.Next
+			}
+		}
 
+		delete(keys.Storage, key)
+		keys.CurrSize = keys.CurrSize - 1
+		return true
+	}
+	return false
+}
 func (keys *KeyStore) InsertItem(key string, value string) {
 	if keys.ActiveSize > keys.CurrSize {
 		keys.deleteLast()
@@ -50,23 +73,25 @@ func (keys *KeyStore) InsertItem(key string, value string) {
 	if FI != nil {
 		FI.Prev = key
 	}
-	keys.FirstItem = key
-
-	keys.Storage[key] = Data{
+	nwPair := Data{
 		Value: value,
 		Prev:  "",
+		Next:  keys.FirstItem,
 	}
+
+	keys.FirstItem = key
+
+	keys.Storage[key] = nwPair
+
 	keys.CurrSize = keys.CurrSize + 1
+	keys.Save()
 }
 
-func (keys *KeyStore) GetItem (key string) *string {
-
-  // Check if field exists
-  if data, ok := keys.Storage[key]; ok {
-    return &data.Value
-  }
-  // Return nil if not exis
-  return nil;
-
+func (keys *KeyStore) GetItem(key string) *Data {
+	// Check if field exists
+	if data, ok := keys.Storage[key]; ok {
+		return &data
+	}
+	// Return nil if not exis
+	return nil
 }
-
