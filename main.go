@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"sync"
 
-	keystore "prehnite_light/keyStore"
+	"prehnite_light/keystore"
+	"prehnite_light/server"
 )
 
 func main() {
@@ -18,6 +19,10 @@ func main() {
 	wg.Add(1)
 
 	fmt.Println("Installed Routes")
+
+	Inst_Server := server.StartServer(":3080")
+
+	Inst_Server.Static("/", "./Public")
 
 	fmt.Println("Ended Program")
 

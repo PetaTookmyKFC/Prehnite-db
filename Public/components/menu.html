@@ -1,0 +1,31 @@
+<menu>
+    <ul class="Menu" hx-target="#tab-contents" role="tablist">
+        <li role="tab" aria-controls="tab-content" aria-selected="true" hx-get="/components/KeyValue/">Sub Level</li>
+        <li role="tab" aria-controls="tab-content" aria-selected="true" hx-get="/Tmp/tab2">Top Level</li>
+    </ul>
+</menu>
+<style>
+body {
+    padding :0px;
+    margin: 0px;
+}
+Menu {
+    padding: 0px;
+    margin: 0px;
+}
+.Menu {
+    font-size: 1.2rem;
+    list-style: none;
+    background: rgba(120, 120, 120, 0.8)
+}
+.Menu > li {
+    display:inline-block;
+
+    padding: .5rem;
+
+}
+.Menu > li:hover {
+    background: rgb(220,220,220,0.8)
+}
+
+</style>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prehnite</title>
+    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon">
+</head>
+
+<body>
+    <script src="https://unpkg.com/htmx.org@1.9.5"></script>
+
+    <menu hx-trigger="load" hx-get="/components/menu" hx-swap="outerHTML">
+        TRIGGER
+    </menu>
+
+    <div style="display:grid" class="Content" id="tab-contents" role="tabpanel" hx-get="/components/KeyValue/" hx-trigger="load">
+
+
+    </div>
+
+
+</body>
+
+</html>

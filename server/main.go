@@ -37,7 +37,6 @@ func (rl routes) addRoute(path string, method string, handler http.HandlerFunc) 
 	r[method] = handler
 	rl[path] = r
 }
-
 func (ser *Server) Get(path string, handler http.HandlerFunc) {
 	ser.routes.addRoute(path, "GET", handler)
 	http.HandleFunc(path, ser.TriggerRoute)
