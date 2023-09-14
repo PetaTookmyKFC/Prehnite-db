@@ -7,4 +7,7 @@ func PowerKeyStore(keys *keystore.KeyStore, serv *Server) {
 	// serv.Get("/get", ())
 	// SET
 	// DELETE
+
+	// Make KeyStore
+
 }

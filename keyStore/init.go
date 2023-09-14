@@ -1,8 +1,18 @@
 package keystore
 
+import (
+	"bufio"
+	"fmt"
+	"log"
+	"os"
+	"path"
+)
+
 type KeyStore struct {
 	ActiveSize int
 	CurrSize   int
+
+	StoreLocation string
 
 	Storage   map[string]Data
 	FirstItem string
@@ -14,84 +24,67 @@ type Data struct {
 	Next  string
 }
 
-func Start_StringStore(size int) *KeyStore {
+func Start_StringStore(size int, directory string) *KeyStore {
 	rKeyStore := KeyStore{
-		Storage:    make(map[string]Data),
-		ActiveSize: size,
-		FirstItem:  "",
-		LastItem:   "",
+		StoreLocation: directory,
+		Storage:       make(map[string]Data),
+		ActiveSize:    size,
+		FirstItem:     "",
+		LastItem:      "",
 	}
 	rKeyStore.LoadPrev()
 	return &rKeyStore
 }
 
-func (keys *KeyStore) getFirst() *Data {
-	if keys.FirstItem == "" {
+// Create item that contains the keyValue that was loaded in RAM
+func (key *KeyStore) Save() error {
+	// Get Directory
+	directory, err := os.Getwd()
+	if err != nil {
+		log.Println(err)
+	}
+	oldData := path.Join(directory, "OldMap")
+	// Create file
+	file, err := os.Create(oldData)
+	if err != nil {
+		return err
+	}
+
+	w := bufio.NewWriter(file)
+	// Write Each line to buffer
+	for value := range key.Storage {
+		w.WriteString(fmt.Sprintf("%s\n", value))
+	}
+
+	// Write Buffer to file
+	return w.Flush()
+}
+
+// Load file
+func (key *KeyStore) LoadPrev() error {
+	// Get Directory
+	directory, err := os.Getwd()
+	if err != nil {
+		log.Println(err)
+	}
+	oldData := path.Join(directory, "OldMap")
+
+	// Check if file exists
+	if _, err := os.Stat(oldData); err != nil {
 		return nil
 	}
-	d := keys.Storage[keys.FirstItem]
-	return &d
-}
 
-func (keys *KeyStore) deleteLast() {
-	if keys.LastItem != "" {
-		NLI := keys.Storage[keys.LastItem].Prev
-		delete(keys.Storage, keys.LastItem)
-		keys.LastItem = NLI
-		keys.CurrSize = keys.CurrSize - 1
-	}
-}
-func (keys *KeyStore) deleteItem(key string) bool {
-	if val, ok := keys.Storage[key]; ok {
-		var linKey *Data
-		if val.Next != "" {
-			linKey = keys.GetItem(val.Next)
-			if linKey != nil {
-				linKey.Prev = val.Prev
-			}
-		}
-		if val.Prev != "" {
-			linKey = keys.GetItem(val.Prev)
-			if linKey != nil {
-				linKey.Next = val.Next
-			}
-		}
+	file, err := os.Open(oldData)
+	defer file.Close()
 
-		delete(keys.Storage, key)
-		keys.CurrSize = keys.CurrSize - 1
-		return true
-	}
-	return false
-}
-func (keys *KeyStore) InsertItem(key string, value string) {
-	if keys.ActiveSize > keys.CurrSize {
-		keys.deleteLast()
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		fmt.Printf("Loaded: %s \n", scanner.Text())
 	}
 
-	FI := keys.getFirst()
-
-	if FI != nil {
-		FI.Prev = key
-	}
-	nwPair := Data{
-		Value: value,
-		Prev:  "",
-		Next:  keys.FirstItem,
+	if err := scanner.Err(); err != nil {
+		log.Panic(err)
 	}
 
-	keys.FirstItem = key
-
-	keys.Storage[key] = nwPair
-
-	keys.CurrSize = keys.CurrSize + 1
-	keys.Save()
-}
-
-func (keys *KeyStore) GetItem(key string) *Data {
-	// Check if field exists
-	if data, ok := keys.Storage[key]; ok {
-		return &data
-	}
-	// Return nil if not exis
 	return nil
 }
