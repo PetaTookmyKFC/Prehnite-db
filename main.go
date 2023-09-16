@@ -2,29 +2,45 @@ package main
 
 import (
 	"fmt"
-	"sync"
-
-	"prehnite_light/keystore"
-	"prehnite_light/server"
+	"log"
+	"prehnite_light/config"
 )
 
 func main() {
-	fmt.Println("Started Program")
 
-	store := keystore.Start_StringStore(5)
-	store.Save()
-	var wg sync.WaitGroup
+	fmt.Println("Prehnite Starting ✅")
 
-	fmt.Println("Created KeyStore!")
-	wg.Add(1)
+	fmt.Print("Loading Config ")
+	conf, err := config.LoadSystemConfig()
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
 
-	fmt.Println("Installed Routes")
+	fmt.Println("✅")
+	fmt.Printf("Keystore Located at : %s", conf.StoreDirectory)
 
-	Inst_Server := server.StartServer(":3080")
+	fmt.Println("Starting KeyStore")
 
-	Inst_Server.Static("/", "./Public")
+	// store := keystore.Start_StringStore(5, path.Join())
+	// store.Save()
+	// var wg sync.WaitGroup
 
-	fmt.Println("Ended Program")
+	// fmt.Println("Created KeyStore!")
+	// wg.Add(1)
 
-	wg.Wait()
+	// fmt.Println("Installed Routes")
+
+	// Inst_Server := server.StartServer(":3080")
+
+	// Inst_Server.Static("/", "./Public")
+
+	// fmt.Println("Ended Program")
+
+	// wg.Wait()
+
+	// fmt.Print("Creating Settings!")
+
+	// config.LoadSystemConfig()
+
 }
