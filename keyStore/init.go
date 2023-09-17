@@ -2,6 +2,7 @@ package keystore
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -25,6 +26,19 @@ type Data struct {
 }
 
 func Start_StringStore(size int, directory string) *KeyStore {
+	// Check Does directory exist
+	if _, err := os.Stat(directory); err != nil {
+		// Make Directory
+		if errors.Is(err, os.ErrNotExist) {
+			err = os.Mkdir(directory, os.ModePerm)
+			if err != nil {
+				log.Fatal(err)
+			}
+		} else {
+			log.Fatal(err)
+		}
+	}
+
 	rKeyStore := KeyStore{
 		StoreLocation: directory,
 		Storage:       make(map[string]Data),

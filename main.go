@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"log"
 	"prehnite_light/config"
+	"prehnite_light/keystore"
+	"prehnite_light/server"
+	"sync"
 )
 
 func main() {
@@ -20,24 +23,27 @@ func main() {
 	fmt.Println("✅")
 	fmt.Printf("Keystore Located at : %s", conf.StoreDirectory)
 
-	fmt.Println("Starting KeyStore")
+	fmt.Print("Starting KeyStore  ")
 
+	store := keystore.Start_StringStore(5, conf.StoreDirectory)
+	fmt.Print(store)
 	// store := keystore.Start_StringStore(5, path.Join())
 	// store.Save()
-	// var wg sync.WaitGroup
 
-	// fmt.Println("Created KeyStore!")
-	// wg.Add(1)
+	fmt.Println("✅")
+	fmt.Print("Starting Server ")
+	var wg sync.WaitGroup
+	wg.Add(1)
 
 	// fmt.Println("Installed Routes")
 
-	// Inst_Server := server.StartServer(":3080")
-
-	// Inst_Server.Static("/", "./Public")
-
+	Inst_Server := server.StartServer(":3080")
+	Inst_Server.Static("/", "./Public")
+	Inst_Server.PowerKeyStore("/API", store)
+	fmt.Println("✅")
 	// fmt.Println("Ended Program")
 
-	// wg.Wait()
+	wg.Wait()
 
 	// fmt.Print("Creating Settings!")
 
